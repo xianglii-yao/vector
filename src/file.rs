@@ -1,14 +1,8 @@
-use std::io::{read_to_string, Error};
+use std::io::{Error, read_to_string};
 
 struct Document {
     rows: Vec<String>,
-    file_name: String
+    file_name: String,
 }
 
-pub fn read_file(location: &str) -> Result<Vec<String>, Error> {
-    let file = read_to_string(location);
-    match file {
-        Ok(doc) => doc,
-        _=()
-    }
-}
+pub fn read_file(location: &str) -> Result<Vec<String>, Error> {}
