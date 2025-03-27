@@ -1,74 +1,75 @@
-use crossterm::cursor::{Hide, MoveTo, Show};
-use crossterm::style::Print;
-use crossterm::terminal::{Clear, ClearType, disable_raw_mode, enable_raw_mode, size};
-use crossterm::{Command, queue};
-use std::io::{Error, Write, stdout};
+use crate::Position;
+use std::io::{self, Write, stdout};
+use termion::color;
+use termion::event::Key;
+use termion::input::TermRead;
+use termion::raw::{IntoRawMode, RawTerminal};
 
-#[derive(Copy, Clone)]
 pub struct Size {
-    pub height: usize,
-    pub width: usize,
+    pub width: u16,
+    pub height: u16,
 }
-#[derive(Copy, Clone, Default)]
-pub struct Position {
-    pub col: usize,
-    pub row: usize,
+pub struct Terminal {
+    size: Size,
+    _stdout: RawTerminal<std::io::Stdout>,
 }
-
-pub struct Terminal;
 
 impl Terminal {
-    pub fn terminate() -> Result<(), Error> {
-        Self::execute()?;
-        disable_raw_mode()?;
-        Ok(())
+    pub fn default() -> Result<Self, std::io::Error> {
+        let size = termion::terminal_size()?;
+        Ok(Self {
+            size: Size {
+                width: size.0,
+                height: size.1.saturating_sub(2),
+            },
+            _stdout: stdout().into_raw_mode()?,
+        })
     }
-    pub fn initialize() -> Result<(), Error> {
-        enable_raw_mode()?;
-        Self::clear_screen()?;
-        Self::execute()?;
-        Ok(())
+    pub fn size(&self) -> &Size {
+        &self.size
     }
-    pub fn clear_screen() -> Result<(), Error> {
-        Self::queue_command(Clear(ClearType::All))?;
-        Ok(())
-    }
-    pub fn clear_line() -> Result<(), Error> {
-        Self::queue_command(Clear(ClearType::CurrentLine))?;
-        Ok(())
-    }
-    pub fn move_caret_to(position: Position) -> Result<(), Error> {
-        #[allow(clippy::as_conversions, clippy::cast_possible_truncation)]
-        Self::queue_command(MoveTo(position.col as u16, position.row as u16))?;
-        Ok(())
-    }
-    pub fn hide_caret() -> Result<(), Error> {
-        Self::queue_command(Hide)?;
-        Ok(())
-    }
-    pub fn show_caret() -> Result<(), Error> {
-        Self::queue_command(Show)?;
-        Ok(())
-    }
-    pub fn print(string: &str) -> Result<(), Error> {
-        Self::queue_command(Print(string))?;
-        Ok(())
+    pub fn clear_screen() {
+        print!("{}", termion::clear::All);
     }
 
-    pub fn size() -> Result<Size, Error> {
-        let (width_u16, height_u16) = size()?;
-        #[allow(clippy::as_conversions)]
-        let height = height_u16 as usize;
-        #[allow(clippy::as_conversions)]
-        let width = width_u16 as usize;
-        Ok(Size { height, width })
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn cursor_position(position: &Position) {
+        let &Position { mut x, mut y } = position;
+        x = x.saturating_add(1);
+        y = y.saturating_add(1);
+        let x = x as u16;
+        let y = y as u16;
+        print!("{}", termion::cursor::Goto(x, y));
     }
-    pub fn execute() -> Result<(), Error> {
-        stdout().flush()?;
-        Ok(())
+    pub fn flush() -> Result<(), std::io::Error> {
+        io::stdout().flush()
     }
-    fn queue_command<T: Command>(command: T) -> Result<(), Error> {
-        queue!(stdout(), command)?;
-        Ok(())
+    pub fn read_key() -> Result<Key, std::io::Error> {
+        loop {
+            if let Some(key) = io::stdin().lock().keys().next() {
+                return key;
+            }
+        }
+    }
+    pub fn cursor_hide() {
+        print!("{}", termion::cursor::Hide);
+    }
+    pub fn cursor_show() {
+        print!("{}", termion::cursor::Show);
+    }
+    pub fn clear_current_line() {
+        print!("{}", termion::clear::CurrentLine);
+    }
+    pub fn set_bg_color(color: color::Rgb) {
+        print!("{}", color::Bg(color));
+    }
+    pub fn reset_bg_color() {
+        print!("{}", color::Bg(color::Reset));
+    }
+    pub fn set_fg_color(color: color::Rgb) {
+        print!("{}", color::Fg(color));
+    }
+    pub fn reset_fg_color() {
+        print!("{}", color::Fg(color::Reset));
     }
 }
