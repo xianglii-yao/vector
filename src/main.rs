@@ -1,9 +1,18 @@
+mod document;
 mod editor;
-use editor::Editor;
-mod buffer;
+mod filetype;
+mod highlighting;
+mod row;
 mod terminal;
-mod view;
+pub use document::Document;
+use editor::Editor;
+pub use editor::Position;
+pub use editor::SearchDirection;
+pub use filetype::FileType;
+pub use filetype::HighlightingOptions;
+pub use row::Row;
+pub use terminal::Terminal;
+
 fn main() {
-    let mut editor = Editor::default();
-    Editor::run(&mut editor);
+    Editor::default().run();
 }
