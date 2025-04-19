@@ -54,10 +54,16 @@ cargo build --release
 ## Keyboard Shortcuts
 
 - `Ctrl + S` - Save the file
-- `Ctrl + Q` - Quit the editor
+- `Ctrl + X` - Quit the editor
 - `Arrow Keys` - Move cursor
 - `Ctrl + F` - Find text
 - `Ctrl + Z` - Undo last action
+
+## Preview
+
+![Image](https://github.com/user-attachments/assets/5e1b34b7-94da-46e1-b118-53c1d622162c)
+
+![Image](https://github.com/user-attachments/assets/446e3a01-a667-43ec-bc2a-0e05b22b6855)
 
 ## Contributing
 
